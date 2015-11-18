@@ -46,7 +46,7 @@
 	            curMonthDay: _date.getDate(),
 	            curWeekDay: _date.getDay(),
 	            indexWeekDay: _indexDate.getDay()
-	    	})
+	    	});
 	    },
 	    backToday: function(){
 	    	var s = new Date();
@@ -249,6 +249,20 @@
 	    		};
 	    	}
 	    },
+	    toggleYearBox: function () {
+	    	var yearBox = React.findDOMNode(this.refs.yearBox);
+	    	if (yearBox.style.display == "block") {
+	    		yearBox.style.display = "none";
+	    	} else {
+	    		yearBox.style.display = "block";
+	    	}
+	    },
+	    fillYear: function () {
+	    	var yearList = [];
+	    	for (var i = 1900; i < 2100; i++) {
+	    		
+	    	};
+	    },
 	    monthPick: function(e) {
 	    	e = e || window.event;
 	    	if (e.target.nodeName.toLowerCase() == "span") {
@@ -283,9 +297,10 @@
 				  		 	<span data-month="12">十二月</span>
 				  		 </div>
 				  		</span>
-				  		<span className="yearHold">
+				  		<span className="yearHold" onClick={this.toggleYearBox}>
 				  			<span>{this.state.curYear}</span>
 				  			<i className="fa fa-sort-desc"></i>
+				  			
 				  		</span>
 				  		<span className="nextMonth"><i className="fa fa-caret-right" onClick={this.nextMonth}></i></span>
 			  		</div>
@@ -320,3 +335,4 @@
     </script>
   </body>
 </html>
+<!-- <div className="yearBox" ref="yearBox" onClick={this.yearPick}></div> -->
