@@ -1,0 +1,115 @@
+.cal-main {
+	position: absolute;
+	padding: 10px;
+	width: 300px;
+	border: 1px solid #ccc;
+	background: #fff;
+	.cal-header {
+		height: 25px;
+		text-align: center;
+		line-height: 25px;
+		margin-bottom: 5px;
+		.preMonth {
+			float: left;
+		}
+		.nextMonth {
+			float: right;
+		}
+		.preMonth,.nextMonth {
+			font-size: 25px;
+			color: #808080;
+			cursor: pointer;
+			&:hover {
+				color:#333;
+			}
+		}
+		.home {
+			float: left;
+			font-size: 20px;
+			margin-left: 10px;
+			color:#808080;
+			cursor: pointer;
+			&:hover {
+				color:#333;
+			}
+		}
+		.monthHold {
+			display: inline-block;
+			margin-right: 30px;
+			position: relative;
+			cursor: pointer;
+			width: 60px;
+			.monthBox {
+				display: none;
+				position: absolute;
+				width: 165px;
+				height: 120px;
+				left: -55px;
+				border: 1px solid #ddd;
+				background: #fff;
+				span {
+					font-size: 0.8em;
+					width: 55px;
+					height: 30px;
+					float: left;
+					cursor: pointer;
+					&:hover {
+						background: #ff8000;
+						color: #fff;
+					}
+				}
+				.active {
+					background: #33AAFF;
+					color: #fff;
+				}
+			}
+			&:hover {
+				.fa-sort-desc {
+					color:#333;
+				}
+			}
+		}
+		.fa-sort-desc {
+			margin: 0 5px;
+			color: #808080;
+			cursor: pointer;
+			vertical-align: top;
+    		padding-top: 4px;
+		}
+	}
+	.cal-dateTable {
+		width: 100%;
+		th,td {
+			border: 1px solid #ddd;
+			height: 20px;
+		}
+		th {
+			background: #F1F1F1;
+			color: #999;
+		}
+		td {
+			cursor: pointer;
+			text-align: right;
+			padding: 2px 5px;
+			background: #FAFAFA;
+			color: #c5c5c5;
+		}
+		.showDate {
+			background: #F5F5F5;
+			color: #666;
+		}
+		.active {
+			background: #33AAFF;
+		    box-shadow: #178FE5 0px 1px 3px 0px inset;
+		    color: #fff;
+		    font-weight: 700;
+		    padding: 2px 5px 2px 2px;
+		}
+		tbody td:hover {
+			background: #ff8000;
+			color: #fff;
+			box-shadow: none !important;
+		}
+	}
+
+}

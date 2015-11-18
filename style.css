@@ -1,0 +1,115 @@
+.cal-main {
+  position: absolute;
+  padding: 10px;
+  width: 300px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+.cal-main .cal-header {
+  height: 25px;
+  text-align: center;
+  line-height: 25px;
+  margin-bottom: 5px;
+}
+.cal-main .cal-header .preMonth {
+  float: left;
+}
+.cal-main .cal-header .nextMonth {
+  float: right;
+}
+.cal-main .cal-header .preMonth,
+.cal-main .cal-header .nextMonth {
+  font-size: 25px;
+  color: #808080;
+  cursor: pointer;
+}
+.cal-main .cal-header .preMonth:hover,
+.cal-main .cal-header .nextMonth:hover {
+  color: #333;
+}
+.cal-main .cal-header .home {
+  float: left;
+  font-size: 20px;
+  margin-left: 10px;
+  color: #808080;
+  cursor: pointer;
+}
+.cal-main .cal-header .home:hover {
+  color: #333;
+}
+.cal-main .cal-header .monthHold {
+  display: inline-block;
+  margin-right: 30px;
+  position: relative;
+  cursor: pointer;
+  width: 60px;
+}
+.cal-main .cal-header .monthHold .monthBox {
+  display: none;
+  position: absolute;
+  width: 165px;
+  height: 120px;
+  left: -55px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+.cal-main .cal-header .monthHold .monthBox span {
+  font-size: 0.8em;
+  width: 55px;
+  height: 30px;
+  float: left;
+  cursor: pointer;
+}
+.cal-main .cal-header .monthHold .monthBox span:hover {
+  background: #ff8000;
+  color: #fff;
+}
+.cal-main .cal-header .monthHold .monthBox .active {
+  background: #33AAFF;
+  color: #fff;
+}
+.cal-main .cal-header .monthHold:hover .fa-sort-desc {
+  color: #333;
+}
+.cal-main .cal-header .fa-sort-desc {
+  margin: 0 5px;
+  color: #808080;
+  cursor: pointer;
+  vertical-align: top;
+  padding-top: 4px;
+}
+.cal-main .cal-dateTable {
+  width: 100%;
+}
+.cal-main .cal-dateTable th,
+.cal-main .cal-dateTable td {
+  border: 1px solid #ddd;
+  height: 20px;
+}
+.cal-main .cal-dateTable th {
+  background: #F1F1F1;
+  color: #999;
+}
+.cal-main .cal-dateTable td {
+  cursor: pointer;
+  text-align: right;
+  padding: 2px 5px;
+  background: #FAFAFA;
+  color: #c5c5c5;
+}
+.cal-main .cal-dateTable .showDate {
+  background: #F5F5F5;
+  color: #666;
+}
+.cal-main .cal-dateTable .active {
+  background: #33AAFF;
+  box-shadow: #178FE5 0px 1px 3px 0px inset;
+  color: #fff;
+  font-weight: 700;
+  padding: 2px 5px 2px 2px;
+}
+.cal-main .cal-dateTable tbody td:hover {
+  background: #ff8000;
+  color: #fff;
+  box-shadow: none !important;
+}
