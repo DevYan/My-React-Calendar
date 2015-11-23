@@ -21,7 +21,8 @@
 	            curMonthCHN: '',
 	            curMonthDay: '',
 	            curWeekDay: '',
-	            indexWeekDay: ''
+	            indexWeekDay: '',
+	            display: false
 	        };
 	    },
 	    componentDidMount: function(){
@@ -94,7 +95,7 @@
 	    	}
 	    	return result;
 	    },
-	    getTotalDays: function(month) {
+	    getTotalDays: function(year, month) {
 	    	var sum = 0;
 	    	switch (month) {
 	    		case 1:
@@ -113,17 +114,16 @@
 	    			sum += 30;
 	    			break;
 	    		case 2:
-	    			this.isRun() ? sum += 29 : sum += 28
+	    			this.isRun(year) ? sum += 29 : sum += 28
 	    	}
 	    	return sum;
 	    },
-	    isRun: function(){
-	    	var year = this.state.curYear;
+	    isRun: function(year){
 	    	if( (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)){
-			 return true;
-			} else { 
-			 return false;
-			}
+				 return true;
+				} else { 
+				 return false;
+				}
 	    },
 	    preMonth: function() {
 	    	var _month = this.state.curMonth;
@@ -135,6 +135,10 @@
 	    	} else {
 	    		_month -= 1;
 	    	}
+	    	var preDayCount = this.getTotalDays(_year, _month);
+	    	if (_day > preDayCount) {
+	    		_day = preDayCount;
+	    	};
 	    	var dateNew =  new Date( _year + '-' + _month + '-' + _day);
 	    	dateNew = new Date(dateNew);
 	    	this.refreshDate(dateNew);
@@ -149,6 +153,10 @@
 	    	} else {
 	    		_month += 1;
 	    	}
+	    	var nextDayCount = this.getTotalDays(_year, _month);
+	    	if (_day > nextDayCount) {
+	    		_day = nextDayCount;
+	    	};
 	    	var dateNew =  new Date( _year + '-' + _month + '-' + _day);
 	    	dateNew = new Date(dateNew);
 	    	this.refreshDate(dateNew);
@@ -157,8 +165,8 @@
 	    	//总行数
 	    	var trCount = 5;
 	    	//月总日数
-	    	var days = this.getTotalDays(this.state.curMonth);
-	    	var daysPre = this.getTotalDays(this.state.curMonth-1 == 0 ? 12 : this.state.curMonth-1);
+	    	var days = this.getTotalDays(this.state.curYear,this.state.curMonth);
+	    	var daysPre = this.getTotalDays(this.state.curYear,this.state.curMonth-1 == 0 ? 12 : this.state.curMonth-1);
 	    	//一号星期几
 	    	var indexWeekDay = this.state.indexWeekDay;
 	    	//用于拼接日子
@@ -190,7 +198,7 @@
 	    		days = days + preDays;
 	    	};
 	    	//确定最后的行数
-	    	var _nextYear = this.state.curMonth == 12 ? this.state.curYear + 1 : this.state.year;
+	    	var _nextYear = this.state.curMonth == 12 ? this.state.curYear + 1 : this.state.curYear;
 	    	var _nextMonth = this.state.curMonth == 12 ? 1 : this.state.curMonth +1;
 	    	if (days > 35) {
 	    		trCount = 6;
@@ -213,26 +221,36 @@
 	    		};
 	    	}
 	    	var doms = [];
-			for (var i = 0; i < trCount; i++) {
-			  doms.push(
-			  	<tr>
-			  		<td data-date={tdArr[i*7].date} className={tdArr[i*7].className}>{tdArr[i*7].display}</td>
-			  		<td data-date={tdArr[i*7+1].date} className={tdArr[i*7+1].className}>{tdArr[i*7+1].display}</td>
-			  		<td data-date={tdArr[i*7+2].date} className={tdArr[i*7+2].className}>{tdArr[i*7+2].display}</td>
-			  		<td data-date={tdArr[i*7+3].date} className={tdArr[i*7+3].className}>{tdArr[i*7+3].display}</td>
-			  		<td data-date={tdArr[i*7+4].date} className={tdArr[i*7+4].className}>{tdArr[i*7+4].display}</td>
-			  		<td data-date={tdArr[i*7+5].date} className={tdArr[i*7+5].className}>{tdArr[i*7+5].display}</td>
-			  		<td data-date={tdArr[i*7+6].date} className={tdArr[i*7+6].className}>{tdArr[i*7+6].display}</td>
-			  	</tr>
-			  );
-			}
-			return doms;
+				for (var i = 0; i < trCount; i++) {
+				  doms.push(
+				  	<tr>
+				  		<td data-date={tdArr[i*7].date} className={tdArr[i*7].className}>{tdArr[i*7].display}</td>
+				  		<td data-date={tdArr[i*7+1].date} className={tdArr[i*7+1].className}>{tdArr[i*7+1].display}</td>
+				  		<td data-date={tdArr[i*7+2].date} className={tdArr[i*7+2].className}>{tdArr[i*7+2].display}</td>
+				  		<td data-date={tdArr[i*7+3].date} className={tdArr[i*7+3].className}>{tdArr[i*7+3].display}</td>
+				  		<td data-date={tdArr[i*7+4].date} className={tdArr[i*7+4].className}>{tdArr[i*7+4].display}</td>
+				  		<td data-date={tdArr[i*7+5].date} className={tdArr[i*7+5].className}>{tdArr[i*7+5].display}</td>
+				  		<td data-date={tdArr[i*7+6].date} className={tdArr[i*7+6].className}>{tdArr[i*7+6].display}</td>
+				  	</tr>
+				  );
+				}
+				return doms;
 	    },
 	    handleDatePick: function(e) {
 	    	var td = e.target;
+	    	if (td.nodeName.toUpperCase() == 'TD') {
+	    		this.setState({
+		    		display: false
+		    	})
+	    	} else {
+	    		this.setState({
+		    		display: true
+		    	})
+	    	}
 	    	var pickDate = td.getAttribute('data-date');
 	    	React.findDOMNode(this.refs.dest).value = pickDate;
 	    	this.refreshDate(new Date(pickDate));
+	    	
 	    },
 	    toggleMonthBox: function () {
 	    	var monthBox = React.findDOMNode(this.refs.monthBox);
@@ -270,60 +288,76 @@
 	    		this.refreshDate(new Date(this.state.curYear+'-'+selectMonth+'-'+this.state.curMonthDay));
 	    	};
 	    },
-		render: function() {
-			var doms = this.getTrList();
-			return (
-			  <div className="calenderHolder">
-			  	<input className={this.props.inputClassName} ref="dest"/>
-			  	<div className="cal-main">
-			  		<div className="cal-header">
-				  		<span className="preMonth"><i className="fa fa-caret-left" onClick={this.preMonth}></i></span>
-			  		 	<span className="home"><i title="今天" className="fa fa-home" onClick={this.backToday}></i></span>
-				  		<span className="monthHold" onClick={this.toggleMonthBox}>
-				  		 <span>{this.state.curMonthCHN}</span>
-				  		 <i className="fa fa-sort-desc"></i>
-				  		 <div className="monthBox" ref="monthBox" onClick={this.monthPick}>
-				  		 	<span data-month="1">一月</span>
-				  		 	<span data-month="2">二月</span>
-				  		 	<span data-month="3">三月</span>
-				  		 	<span data-month="4">四月</span>
-				  		 	<span data-month="5">五月</span>
-				  		 	<span data-month="6">六月</span>
-				  		 	<span data-month="7">七月</span>
-				  		 	<span data-month="8">八月</span>
-				  		 	<span data-month="9">九月</span>
-				  		 	<span data-month="10">十月</span>
-				  		 	<span data-month="11">十一月</span>
-				  		 	<span data-month="12">十二月</span>
-				  		 </div>
-				  		</span>
-				  		<span className="yearHold" onClick={this.toggleYearBox}>
-				  			<span>{this.state.curYear}</span>
-				  			<i className="fa fa-sort-desc"></i>
-				  			
-				  		</span>
-				  		<span className="nextMonth"><i className="fa fa-caret-right" onClick={this.nextMonth}></i></span>
-			  		</div>
-			  		<table className="cal-dateTable">
-			  		 <thead>
-				  		 <tr>
-				  		 	<th>日</th>
-				  		 	<th>一</th>
-				  		 	<th>二</th>
-				  		 	<th>三</th>
-				  		 	<th>四</th>
-				  		 	<th>五</th>
-				  		 	<th>六</th>
-				  		 </tr>
-			  		 </thead>
-			  		 <tbody onClick={this.handleDatePick}>
-			  		 	{doms}
-			  		 </tbody>
-			  		</table>
-			  	</div>
-			  </div>
-			);
-		}
+	    handleFocus: function () {
+	    	this.setState({
+	    		display: true
+	    	})
+	    },
+	    handleBlur: function () {
+	    	this.setState({
+	    		//display: false
+	    	})
+	    },
+			render: function() {
+				var doms = this.getTrList();
+				return (
+				  <div className="calenderHolder">
+				  	<input className={this.props.inputClassName}
+				  	 onFocus={this.handleFocus}
+				  	 onBlur={this.handleBlur}
+				  	 ref="dest"/>
+				  	{ this.state.display && (
+				  			<div className="cal-main">
+						  		<div className="cal-header">
+							  		<span className="preMonth"><i className="fa fa-caret-left" onClick={this.preMonth}></i></span>
+						  		 	<span className="home"><i title="今天" className="fa fa-home" onClick={this.backToday}></i></span>
+							  		<span className="monthHold" onClick={this.toggleMonthBox}>
+							  		 <span>{this.state.curMonthCHN}</span>
+							  		 <i className="fa fa-sort-desc"></i>
+							  		 <div className="monthBox" ref="monthBox" onClick={this.monthPick}>
+							  		 	<span data-month="1">一月</span>
+							  		 	<span data-month="2">二月</span>
+							  		 	<span data-month="3">三月</span>
+							  		 	<span data-month="4">四月</span>
+							  		 	<span data-month="5">五月</span>
+							  		 	<span data-month="6">六月</span>
+							  		 	<span data-month="7">七月</span>
+							  		 	<span data-month="8">八月</span>
+							  		 	<span data-month="9">九月</span>
+							  		 	<span data-month="10">十月</span>
+							  		 	<span data-month="11">十一月</span>
+							  		 	<span data-month="12">十二月</span>
+							  		 </div>
+							  		</span>
+							  		<span className="yearHold" onClick={this.toggleYearBox}>
+							  			<span>{this.state.curYear}</span>
+							  			<i className="fa fa-sort-desc"></i>
+							  			
+							  		</span>
+							  		<span className="nextMonth"><i className="fa fa-caret-right" onClick={this.nextMonth}></i></span>
+						  		</div>
+						  		<table className="cal-dateTable">
+						  		 <thead>
+							  		 <tr>
+							  		 	<th>日</th>
+							  		 	<th>一</th>
+							  		 	<th>二</th>
+							  		 	<th>三</th>
+							  		 	<th>四</th>
+							  		 	<th>五</th>
+							  		 	<th>六</th>
+							  		 </tr>
+						  		 </thead>
+						  		 <tbody onClick={this.handleDatePick}>
+						  		 	{doms}
+						  		 </tbody>
+						  		</table>
+						  	</div>
+				  	)}
+				  	
+				  </div>
+				);
+			}
 	});
 
 	React.render(
