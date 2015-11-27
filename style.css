@@ -90,7 +90,7 @@
 .cal-main .cal-header .yearHold .yearBox p {
   margin: 0;
 }
-.cal-main .cal-header .yearHold .yearBox p：hover {
+.cal-main .cal-header .yearHold .yearBox p:hover {
   background: #ff8000;
   color: #fff;
 }

@@ -275,6 +275,10 @@
         e.stopPropagation();
         this.setState({
           displayYear: !this.state.displayYear
+        },function(){
+          if (this.state.displayYear) {
+            React.findDOMNode(this.refs.yearBox).scrollTop = 1175;
+          }
         })
 	    },
 	    fillYear: function () {
@@ -282,7 +286,7 @@
         var yearDown = this.state.curYear - 50;
         var yearTop = this.state.curYear + 50;
 	    	for (var i = yearDown; i <= yearTop; i++) {
-          yearList.push(<p className={i==this.state.curYear?'active':''}>{i}</p>)
+          yearList.push(<p className={i==this.state.curYear?'active':''}>{i}</p>);
 	    	};
         return yearList;
 	    },
