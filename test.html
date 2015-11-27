@@ -22,7 +22,9 @@
 	            curMonthDay: '',
 	            curWeekDay: '',
 	            indexWeekDay: '',
-	            display: false
+	            display: false,
+              displayMonth: false,
+              displayYear: false
 	        };
 	    },
 	    componentDidMount: function(){
@@ -121,7 +123,7 @@
 	    isRun: function(year){
 	    	if( (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)){
 				 return true;
-				} else { 
+				} else {
 				 return false;
 				}
 	    },
@@ -250,36 +252,39 @@
 	    	var pickDate = td.getAttribute('data-date');
 	    	React.findDOMNode(this.refs.dest).value = pickDate;
 	    	this.refreshDate(new Date(pickDate));
-	    	
+
 	    },
-	    toggleMonthBox: function () {
-	    	var monthBox = React.findDOMNode(this.refs.monthBox);
-	    	if (monthBox.style.display == "block") {
-	    		monthBox.style.display = "none";
-	    	} else {
-	    		monthBox.style.display = "block";
-	    		var monthList = monthBox.children;
-	    		for (var i = 0; i < 12; i++) {
-	    			monthList[i].className = "";
-	    			if (i+1 == this.state.curMonth) {
-	    				monthList[i].className = "active";
-	    			};
-	    		};
-	    	}
+	    toggleMonthBox: function (e) {
+        e.stopPropagation();
+        this.setState({
+          displayMonth: !this.state.displayMonth
+        },function(){
+          if (this.state.displayMonth) {
+            var monthBox = React.findDOMNode(this.refs.monthBox);
+            var monthList = monthBox.children;
+  	    		for (var i = 0; i < 12; i++) {
+  	    			monthList[i].className = "";
+  	    			if (i+1 == this.state.curMonth) {
+  	    				monthList[i].className = "active";
+  	    			};
+  	    		};
+          }
+        });
 	    },
-	    toggleYearBox: function () {
-	    	var yearBox = React.findDOMNode(this.refs.yearBox);
-	    	if (yearBox.style.display == "block") {
-	    		yearBox.style.display = "none";
-	    	} else {
-	    		yearBox.style.display = "block";
-	    	}
+	    toggleYearBox: function (e) {
+        e.stopPropagation();
+        this.setState({
+          displayYear: !this.state.displayYear
+        })
 	    },
 	    fillYear: function () {
 	    	var yearList = [];
-	    	for (var i = 1900; i < 2100; i++) {
-	    		
+        var yearDown = this.state.curYear - 50;
+        var yearTop = this.state.curYear + 50;
+	    	for (var i = yearDown; i <= yearTop; i++) {
+          yearList.push(<p className={i==this.state.curYear?'active':''}>{i}</p>)
 	    	};
+        return yearList;
 	    },
 	    monthPick: function(e) {
 	    	e = e || window.event;
@@ -288,6 +293,13 @@
 	    		this.refreshDate(new Date(this.state.curYear+'-'+selectMonth+'-'+this.state.curMonthDay));
 	    	};
 	    },
+      yearPick: function(e) {
+        e = e || window.event;
+        if (e.target.nodeName.toLowerCase() == "p" ) {
+          var selectYear = e.target.innerHTML;
+          this.refreshDate(new Date(selectYear+'-'+this.state.curMonth+'-'+this.state.curMonthDay));
+        }
+      },
 	    handleFocus: function () {
 	    	this.setState({
 	    		display: true
@@ -298,6 +310,13 @@
 	    		//display: false
 	    	})
 	    },
+      // 外层点击隐藏弹出的月份和年
+      outerClick: function () {
+        this.setState({
+          displayMonth: false,
+          displayYear: false
+        })
+      },
 			render: function() {
 				var doms = this.getTrList();
 				return (
@@ -307,32 +326,40 @@
 				  	 onBlur={this.handleBlur}
 				  	 ref="dest"/>
 				  	{ this.state.display && (
-				  			<div className="cal-main">
+				  			<div className="cal-main" onClick={this.outerClick}>
 						  		<div className="cal-header">
 							  		<span className="preMonth"><i className="fa fa-caret-left" onClick={this.preMonth}></i></span>
 						  		 	<span className="home"><i title="今天" className="fa fa-home" onClick={this.backToday}></i></span>
 							  		<span className="monthHold" onClick={this.toggleMonthBox}>
 							  		 <span>{this.state.curMonthCHN}</span>
 							  		 <i className="fa fa-sort-desc"></i>
-							  		 <div className="monthBox" ref="monthBox" onClick={this.monthPick}>
-							  		 	<span data-month="1">一月</span>
-							  		 	<span data-month="2">二月</span>
-							  		 	<span data-month="3">三月</span>
-							  		 	<span data-month="4">四月</span>
-							  		 	<span data-month="5">五月</span>
-							  		 	<span data-month="6">六月</span>
-							  		 	<span data-month="7">七月</span>
-							  		 	<span data-month="8">八月</span>
-							  		 	<span data-month="9">九月</span>
-							  		 	<span data-month="10">十月</span>
-							  		 	<span data-month="11">十一月</span>
-							  		 	<span data-month="12">十二月</span>
-							  		 </div>
+                     {
+                       this.state.displayMonth &&
+                         <div className="monthBox" ref="monthBox" onClick={this.monthPick}>
+    							  		 	<span data-month="1">一月</span>
+    							  		 	<span data-month="2">二月</span>
+    							  		 	<span data-month="3">三月</span>
+    							  		 	<span data-month="4">四月</span>
+    							  		 	<span data-month="5">五月</span>
+    							  		 	<span data-month="6">六月</span>
+    							  		 	<span data-month="7">七月</span>
+    							  		 	<span data-month="8">八月</span>
+    							  		 	<span data-month="9">九月</span>
+    							  		 	<span data-month="10">十月</span>
+    							  		 	<span data-month="11">十一月</span>
+    							  		 	<span data-month="12">十二月</span>
+    							  		 </div>
+                     }
 							  		</span>
 							  		<span className="yearHold" onClick={this.toggleYearBox}>
 							  			<span>{this.state.curYear}</span>
 							  			<i className="fa fa-sort-desc"></i>
-							  			
+                      {
+                        this.state.displayYear &&
+                        <div className="yearBox" ref="yearBox" onClick={this.yearPick}>
+                        {this.fillYear()}
+                        </div>
+                      }
 							  		</span>
 							  		<span className="nextMonth"><i className="fa fa-caret-right" onClick={this.nextMonth}></i></span>
 						  		</div>
@@ -354,7 +381,7 @@
 						  		</table>
 						  	</div>
 				  	)}
-				  	
+
 				  </div>
 				);
 			}
@@ -369,4 +396,3 @@
     </script>
   </body>
 </html>
-<!-- <div className="yearBox" ref="yearBox" onClick={this.yearPick}></div> -->
