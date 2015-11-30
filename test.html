@@ -14,19 +14,25 @@
     <script type="text/babel">
 	var Calendar = React.createClass({
 		getInitialState: function () {
-	        return {
-	            curDate: '',
-	            curYear: '',
-	            curMonth: '',
-	            curMonthCHN: '',
-	            curMonthDay: '',
-	            curWeekDay: '',
-	            indexWeekDay: '',
-	            display: false,
-              displayMonth: false,
-              displayYear: false
-	        };
+        return {
+            curDate: '',
+            curYear: '',
+            curMonth: '',
+            curMonthCHN: '',
+            curMonthDay: '',
+            curWeekDay: '',
+            indexWeekDay: '',
+            initOver: false,
+            display: false,
+            displayMonth: false,
+            displayYear: false
+        };
 	    },
+      // 获取Unix时间
+      getUnixTime: function(date) {
+        var re = /(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2}))?/.exec(date);
+        return new Date(re[1],(re[2]||1)-1,re[3]||1,re[4]||0,re[5]||0,re[6]||0).getTime()/1000;
+      },
 	    componentDidMount: function(){
 	    	var _date;
 	    	if (this.props.date) {
@@ -43,12 +49,13 @@
 	    	var _month = _date.getMonth() + 1;
 	    	this.setState({
 	    		curDate: _date,
-	            curYear: _date.getFullYear(),
-	            curMonth: _month,
-	            curMonthCHN: $this.getMonthCHN(_month),
-	            curMonthDay: _date.getDate(),
-	            curWeekDay: _date.getDay(),
-	            indexWeekDay: _indexDate.getDay()
+          curYear: _date.getFullYear(),
+          curMonth: _month,
+          curMonthCHN: $this.getMonthCHN(_month),
+          curMonthDay: _date.getDate(),
+          curWeekDay: _date.getDay(),
+          indexWeekDay: _indexDate.getDay(),
+          initOver:true
 	    	});
 	    },
 	    backToday: function(){
@@ -192,7 +199,7 @@
 	    			preArr.push({
 	    				date: _preYear+'-'+_preMonth+'-'+_preDay,
 	    				display: _preDay,
-	    				className: ''
+	    				className: 'PreDate'
 	    			});
 	    		};
 	    		preArr.reverse();
@@ -209,7 +216,7 @@
 	    			tdArr.push({
 		    			date: _nextYear + '-' + _nextMonth + '-' +(i+1),
 	    				display: i + 1,
-	    				className: ''
+	    				className: 'NextDate'
 		    		});
 	    		};
 	    	} else {
@@ -218,28 +225,45 @@
 	    			tdArr.push({
 		    			date: _nextYear + '-' + _nextMonth + '-' +(i+1),
 	    				display: i + 1,
-	    				className: ''
+	    				className: 'NextDate'
 		    		});
 	    		};
 	    	}
 	    	var doms = [];
 				for (var i = 0; i < trCount; i++) {
 				  doms.push(
-				  	<tr>
-				  		<td data-date={tdArr[i*7].date} className={tdArr[i*7].className}>{tdArr[i*7].display}</td>
-				  		<td data-date={tdArr[i*7+1].date} className={tdArr[i*7+1].className}>{tdArr[i*7+1].display}</td>
-				  		<td data-date={tdArr[i*7+2].date} className={tdArr[i*7+2].className}>{tdArr[i*7+2].display}</td>
-				  		<td data-date={tdArr[i*7+3].date} className={tdArr[i*7+3].className}>{tdArr[i*7+3].display}</td>
-				  		<td data-date={tdArr[i*7+4].date} className={tdArr[i*7+4].className}>{tdArr[i*7+4].display}</td>
-				  		<td data-date={tdArr[i*7+5].date} className={tdArr[i*7+5].className}>{tdArr[i*7+5].display}</td>
-				  		<td data-date={tdArr[i*7+6].date} className={tdArr[i*7+6].className}>{tdArr[i*7+6].display}</td>
+				  	<tr key={i}>
+				  		<td data-date={tdArr[i*7].date} className={this.getTdClassName(tdArr[i*7])}>{tdArr[i*7].display}</td>
+				  		<td data-date={tdArr[i*7+1].date} className={this.getTdClassName(tdArr[i*7+1])}>{tdArr[i*7+1].display}</td>
+				  		<td data-date={tdArr[i*7+2].date} className={this.getTdClassName(tdArr[i*7+2])}>{tdArr[i*7+2].display}</td>
+				  		<td data-date={tdArr[i*7+3].date} className={this.getTdClassName(tdArr[i*7+3])}>{tdArr[i*7+3].display}</td>
+				  		<td data-date={tdArr[i*7+4].date} className={this.getTdClassName(tdArr[i*7+4])}>{tdArr[i*7+4].display}</td>
+				  		<td data-date={tdArr[i*7+5].date} className={this.getTdClassName(tdArr[i*7+5])}>{tdArr[i*7+5].display}</td>
+				  		<td data-date={tdArr[i*7+6].date} className={this.getTdClassName(tdArr[i*7+6])}>{tdArr[i*7+6].display}</td>
 				  	</tr>
 				  );
 				}
 				return doms;
 	    },
+      // 得到td的类名，包括有关最大 最小日期的处理
+      getTdClassName: function(item) {
+        if (!this.state.initOver) {
+          return false;
+        }
+        var minDate = this.props.min ? this.getUnixTime(this.props.min) : 0;
+        var maxDate = this.props.max ? this.getUnixTime(this.props.max) : Infinity;
+        var _date = this.getUnixTime(item.date);
+        var className = item.className;
+        if (_date < minDate || _date > maxDate) {
+          className += ' disable';
+        }
+        return className;
+      },
 	    handleDatePick: function(e) {
 	    	var td = e.target;
+        if (td.className.indexOf('disable') != -1) {
+          return;
+        }
 	    	if (td.nodeName.toUpperCase() == 'TD') {
 	    		this.setState({
 		    		display: false
@@ -257,6 +281,7 @@
 	    toggleMonthBox: function (e) {
         e.stopPropagation();
         this.setState({
+          displayYear: false,
           displayMonth: !this.state.displayMonth
         },function(){
           if (this.state.displayMonth) {
@@ -274,6 +299,7 @@
 	    toggleYearBox: function (e) {
         e.stopPropagation();
         this.setState({
+          displayMonth: false,
           displayYear: !this.state.displayYear
         },function(){
           if (this.state.displayYear) {
@@ -307,12 +333,11 @@
 	    handleFocus: function () {
 	    	this.setState({
 	    		display: true
-	    	})
-	    },
-	    handleBlur: function () {
-	    	this.setState({
-	    		//display: false
-	    	})
+	    	},function () {
+          var mock = React.findDOMNode(this.refs.rcMock);
+          mock.style.width = document.body.clientWidth+'px';
+          mock.style.height = document.body.clientHeight+'px';
+        })
 	    },
       // 外层点击隐藏弹出的月份和年
       outerClick: function () {
@@ -321,14 +346,23 @@
           displayYear: false
         })
       },
+      //
+      handleHide: function () {
+        this.setState({
+          display: false
+        })
+      },
 			render: function() {
 				var doms = this.getTrList();
 				return (
 				  <div className="calenderHolder">
 				  	<input className={this.props.inputClassName}
 				  	 onFocus={this.handleFocus}
-				  	 onBlur={this.handleBlur}
 				  	 ref="dest"/>
+            {
+              this.state.display &&
+              <div className="rc-mock" ref="rcMock" onClick={this.handleHide}></div>
+            }
 				  	{ this.state.display && (
 				  			<div className="cal-main" onClick={this.outerClick}>
 						  		<div className="cal-header">
@@ -394,7 +428,9 @@
 	React.render(
 		<Calendar
 		 inputClassName = "ipt-area ipt-area2 ipt-area3"
-		 date="" />,
+		 date="2015-9-15"
+     min="2015-9-07"
+     max="2015-9-18"/>,
 		document.getElementById('example')
 	);
     </script>
